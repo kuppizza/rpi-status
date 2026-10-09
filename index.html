@@ -67,7 +67,7 @@
         <div class="header">
             <div>
                 <h1>Raspberry Pi Command Center</h1>
-                <div class="header-sub">IP: <code>192.168.1.107</code> • Uptime: 2 hodin, 44 minut</div>
+                <div class="header-sub">IP: <code>192.168.1.107</code> • Uptime: 2 hodin, 59 minut</div>
             </div>
             <div class="header-actions">
                 <button class="btn-refresh" onclick="forceReload()">🔄 Obnovit</button>
@@ -88,7 +88,7 @@
             <div class="grid-card">
                 <div>
                     <div class="card-title">Využití RAM</div>
-                    <div class="card-sub">362Mi / 935Mi (39%)</div>
+                    <div class="card-sub">364Mi / 935Mi (39%)</div>
                 </div>
                 <div class="progress-bg"><div class="progress-fill" style="width: 39%; background:#22c55e;"></div></div>
             </div>
@@ -97,14 +97,14 @@
                     <div class="card-title">Teplota CPU</div>
                     <div class="card-sub">Stav chlazení</div>
                 </div>
-                <div style="font-size: 1.25rem; font-weight: bold; margin-top: 8px; color: #38bdf8;">55.8'C</div>
+                <div style="font-size: 1.25rem; font-weight: bold; margin-top: 8px; color: #38bdf8;">55.3'C</div>
             </div>
         </div>
 
         <!-- SÍŤOVÁ ZAŘÍZENÍ -->
         <div class="section-title">Síťová Zařízení</div>
         <div class="grid">
-            <div class='grid-card'><div><div class='card-title'><a href='http://menu1.local' target='_blank' class='device-link'>MENU 1 ↗</a></div><div class='card-sub'>menu1.local</div></div><span class='badge badge-err'><span class='dot dot-err'></span>OFFLINE</span></div><div class='grid-card'><div><div class='card-title'><a href='http://menu2.local' target='_blank' class='device-link'>MENU 2 ↗</a></div><div class='card-sub'>menu2.local</div></div><span class='badge badge-err'><span class='dot dot-err'></span>OFFLINE</span></div><div class='grid-card'><div><div class='card-title'><a href='http://menu3.local' target='_blank' class='device-link'>MENU 3 ↗</a></div><div class='card-sub'>menu3.local</div></div><span class='badge badge-err'><span class='dot dot-err'></span>OFFLINE</span></div><div class='grid-card'><div><div class='card-title'><a href='http://192.168.1.232' target='_blank' class='device-link'>Platební terminál ↗</a></div><div class='card-sub'>192.168.1.232 • 353.670 ms</div></div><span class='badge badge-ok'><span class='dot dot-ok'></span>ONLINE</span></div><div class='grid-card'><div><div class='card-title'><a href='http://192.168.1.238' target='_blank' class='device-link'>Dotykačka ↗</a></div><div class='card-sub'>192.168.1.238</div></div><span class='badge badge-err'><span class='dot dot-err'></span>OFFLINE</span></div><div class='grid-card'><div><div class='card-title'><a href='http://192.168.1.102' target='_blank' class='device-link'>Kamera ↗</a></div><div class='card-sub'>192.168.1.102 • 4.201 ms</div></div><span class='badge badge-ok'><span class='dot dot-ok'></span>ONLINE</span></div>
+            <div class='grid-card'><div><div class='card-title'><a href='http://menu1.local' target='_blank' class='device-link'>MENU 1 ↗</a></div><div class='card-sub'>menu1.local</div></div><span class='badge badge-err'><span class='dot dot-err'></span>OFFLINE</span></div><div class='grid-card'><div><div class='card-title'><a href='http://menu2.local' target='_blank' class='device-link'>MENU 2 ↗</a></div><div class='card-sub'>menu2.local</div></div><span class='badge badge-err'><span class='dot dot-err'></span>OFFLINE</span></div><div class='grid-card'><div><div class='card-title'><a href='http://menu3.local' target='_blank' class='device-link'>MENU 3 ↗</a></div><div class='card-sub'>menu3.local</div></div><span class='badge badge-err'><span class='dot dot-err'></span>OFFLINE</span></div><div class='grid-card'><div><div class='card-title'><a href='http://192.168.1.232' target='_blank' class='device-link'>Platební terminál ↗</a></div><div class='card-sub'>192.168.1.232 • 43.657 ms</div></div><span class='badge badge-ok'><span class='dot dot-ok'></span>ONLINE</span></div><div class='grid-card'><div><div class='card-title'><a href='http://192.168.1.238' target='_blank' class='device-link'>Dotykačka ↗</a></div><div class='card-sub'>192.168.1.238</div></div><span class='badge badge-err'><span class='dot dot-err'></span>OFFLINE</span></div><div class='grid-card'><div><div class='card-title'><a href='http://192.168.1.102' target='_blank' class='device-link'>Kamera ↗</a></div><div class='card-sub'>192.168.1.102 • 4.334 ms</div></div><span class='badge badge-ok'><span class='dot dot-ok'></span>ONLINE</span></div>
         </div>
 
         <!-- APLIKACE & SLUŽBY -->
@@ -123,14 +123,14 @@
 
         <!-- PATKA -->
         <div class="meta">
-            <div>Aktualizováno: 2026-10-09 09:45:01 (<span id="freshness" class="freshness-badge">Právě teď</span>)</div>
+            <div>Aktualizováno: 2026-10-09 10:00:01 (<span id="freshness" class="freshness-badge">Právě teď</span>)</div>
             <div>Automatická obnova stránky každých 5 minut</div>
         </div>
     </div>
 
     <!-- JAVASCRIPT PRO OBNOVU A STÁŘÍ DAT -->
     <script>
-        const generatedAt = new Date("2026-10-09T09:45:01+02:00").getTime();
+        const generatedAt = new Date("2026-10-09T10:00:01+02:00").getTime();
 
         function updateFreshness() {
             const now = new Date().getTime();
