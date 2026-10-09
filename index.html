@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Zákaz kešování v prohlížeči i CDN -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <title>RPi Command Center</title>
+    <style>
+        :root { --bg: #0b0f19; --card: #151c2c; --border: #232d42; --text: #f8fafc; --muted: #94a3b8; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 24px 16px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 20px; }
+        .header-actions { display: flex; align-items: center; gap: 12px; }
+        h1 { font-size: 1.25rem; font-weight: 700; margin: 0; color: #38bdf8; }
+        .header-sub { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+
+        .btn-refresh {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .btn-refresh:hover { background: var(--border); color: #38bdf8; }
+
+        .section-title { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 24px 0 12px 0; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+        .grid-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 80px; }
+        .card-title { font-weight: 600; font-size: 0.95rem; }
+        .card-sub { font-size: 0.8rem; color: var(--muted); margin-top: 4px; font-family: monospace; }
+
+        .device-link { color: #38bdf8; text-decoration: none; transition: color 0.15s ease; }
+        .device-link:hover { text-decoration: underline; color: #7dd3fc; }
+
+        .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; margin-top: 12px; width: fit-content; }
+        .badge-ok { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+        .badge-err { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; }
+        .dot-ok { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+        .dot-err { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+        .progress-bg { background: #232d42; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 10px; }
+        .progress-fill { height: 100%; border-radius: 4px; }
+
+        .log-box { background: #070a12; border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: monospace; font-size: 0.8rem; color: #e2e8f0; line-height: 1.6; overflow-x: auto; white-space: pre-wrap; }
+        .log-err { color: #f87171; font-weight: bold; background: rgba(239, 68, 68, 0.1); padding: 2px 4px; border-radius: 4px; display: block; }
+        .log-ok { color: #4ade80; display: block; }
+
+        .meta { font-size: 0.75rem; color: var(--muted); text-align: center; margin-top: 32px; display: flex; flex-direction: column; gap: 6px; }
+        .freshness-badge { color: #38bdf8; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HLAVIČKA -->
+        <div class="header">
+            <div>
+                <h1>Raspberry Pi Command Center</h1>
+                <div class="header-sub">IP: <code>192.168.1.107</code> • Uptime: 14 minut</div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-refresh" onclick="forceReload()">🔄 Obnovit</button>
+                <span class="badge badge-err"><span class="dot dot-err"></span>PROBLÉM DETEKOVÁN</span>
+            </div>
+        </div>
+
+        <!-- SYSTÉMOVÉ MĚŘIČE -->
+        <div class="section-title">Systémové Měřiče</div>
+        <div class="grid">
+            <div class="grid-card">
+                <div>
+                    <div class="card-title">Zaplnění SD Karty</div>
+                    <div class="card-sub">5.3G / 7.0G (79%)</div>
+                </div>
+                <div class="progress-bg"><div class="progress-fill" style="width: 79%; background:#22c55e;"></div></div>
+            </div>
+            <div class="grid-card">
+                <div>
+                    <div class="card-title">Využití RAM</div>
+                    <div class="card-sub">411Mi / 935Mi (44%)</div>
+                </div>
+                <div class="progress-bg"><div class="progress-fill" style="width: 44%; background:#22c55e;"></div></div>
+            </div>
+            <div class="grid-card">
+                <div>
+                    <div class="card-title">Teplota CPU</div>
+                    <div class="card-sub">Stav chlazení</div>
+                </div>
+                <div style="font-size: 1.25rem; font-weight: bold; margin-top: 8px; color: #38bdf8;">51.5'C</div>
+            </div>
+        </div>
+
+        <!-- SÍŤOVÁ ZAŘÍZENÍ -->
+        <div class="section-title">Síťová Zařízení</div>
+        <div class="grid">
+            <div class='grid-card'><div><div class='card-title'><a href='http://menu1.local' target='_blank' class='device-link'>MENU 1 ↗</a></div><div class='card-sub'>menu1.local</div></div><span class='badge badge-err'><span class='dot dot-err'></span>OFFLINE</span></div><div class='grid-card'><div><div class='card-title'><a href='http://menu2.local' target='_blank' class='device-link'>MENU 2 ↗</a></div><div class='card-sub'>menu2.local</div></div><span class='badge badge-err'><span class='dot dot-err'></span>OFFLINE</span></div><div class='grid-card'><div><div class='card-title'><a href='http://menu3.local' target='_blank' class='device-link'>MENU 3 ↗</a></div><div class='card-sub'>menu3.local</div></div><span class='badge badge-err'><span class='dot dot-err'></span>OFFLINE</span></div><div class='grid-card'><div><div class='card-title'><a href='http://192.168.1.232' target='_blank' class='device-link'>Platební terminál ↗</a></div><div class='card-sub'>192.168.1.232</div></div><span class='badge badge-err'><span class='dot dot-err'></span>OFFLINE</span></div><div class='grid-card'><div><div class='card-title'><a href='http://192.168.1.238' target='_blank' class='device-link'>Dotykačka ↗</a></div><div class='card-sub'>192.168.1.238</div></div><span class='badge badge-err'><span class='dot dot-err'></span>OFFLINE</span></div><div class='grid-card'><div><div class='card-title'><a href='http://192.168.1.102' target='_blank' class='device-link'>Kamera ↗</a></div><div class='card-sub'>192.168.1.102 • 27.900 ms</div></div><span class='badge badge-ok'><span class='dot dot-ok'></span>ONLINE</span></div>
+        </div>
+
+        <!-- APLIKACE & SLUŽBY -->
+        <div class="section-title">Aplikace & Služby</div>
+        <div class="grid">
+            <div class='grid-card'><div><div class='card-title'>Timer.sh</div><div class='card-sub'>Proces systému</div></div><span class='badge badge-ok'><span class='dot dot-ok'></span>BĚŽÍ</span></div><div class='grid-card'><div><div class='card-title'>Rádio</div><div class='card-sub'>Proces systému</div></div><span class='badge badge-ok'><span class='dot dot-ok'></span>BĚŽÍ</span></div><div class='grid-card'><div><div class='card-title'>Akční pizza</div><div class='card-sub'>Proces systému</div></div><span class='badge badge-ok'><span class='dot dot-ok'></span>BĚŽÍ</span></div>
+        </div>
+
+        <!-- POSLEDNÍ UDÁLOSTI Z LOGU -->
+        <div class="section-title">Poslední Události z Logu</div>
+        <div class="log-box"><span class="log-err">[2026-10-08 07:10:51] OFFLINE: MENU3 (menu3.local) neodpovd na ping!</span>
+<span class="log-err">[2026-10-08 07:11:01] OFFLINE: Platebni terminal (192.168.1.232) neodpovd na ping!</span>
+<span class="log-err">[2026-10-08 07:11:11] OFFLINE: Dotykacka (192.168.1.238) neodpovd na ping!</span>
+<span class="log-err">[2026-10-08 08:40:48] OFFLINE: Kamera (Nenalezena) neodpovd na ping!</span>
+2026-10-08 20:50:01 shutdown raspberry</div>
+
+        <!-- PATKA -->
+        <div class="meta">
+            <div>Aktualizováno: 2026-10-09 07:15:01 (<span id="freshness" class="freshness-badge">Právě teď</span>)</div>
+            <div>Automatická obnova stránky každých 5 minut</div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT PRO OBNOVU A STÁŘÍ DAT -->
+    <script>
+        const generatedAt = new Date("2026-10-09T07:15:01+02:00").getTime();
+
+        function updateFreshness() {
+            const now = new Date().getTime();
+            const diffSeconds = Math.floor((now - generatedAt) / 1000);
+            const freshnessEl = document.getElementById('freshness');
+
+            if (!freshnessEl) return;
+
+            if (diffSeconds < 10) {
+                freshnessEl.innerText = "Právě teď";
+            } else if (diffSeconds < 60) {
+                freshnessEl.innerText = "před " + diffSeconds + " sek.";
+            } else {
+                const diffMinutes = Math.floor(diffSeconds / 60);
+                freshnessEl.innerText = "před " + diffMinutes + " min.";
+            }
+        }
+
+        // Vynucené načtení bez keše
+        function forceReload() {
+            const url = new URL(window.location.href);
+            url.searchParams.set('t', Date.now());
+            window.location.href = url.toString();
+        }
+
+        updateFreshness();
+        setInterval(updateFreshness, 5000);
+
+        // Automatické obnovení každých 300 sekund (5 minut) natvrdo z serveru
+        setTimeout(forceReload, 300000);
+    </script>
+</body>
+</html>
